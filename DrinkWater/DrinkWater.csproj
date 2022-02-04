@@ -94,7 +94,7 @@
 	
 	<ItemGroup>
 		<EmbeddedResource Include="manifest.json" />
-		<EmbeddedResource Include="Images\*.png" />
+		<EmbeddedResource Include="Resources\*.png" />
 		<EmbeddedResource Include="UI\Views\*.bsml" />
 	</ItemGroup>
 
