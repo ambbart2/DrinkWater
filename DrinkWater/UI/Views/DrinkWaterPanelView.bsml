@@ -1,0 +1,16 @@
+﻿<bg xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd">
+  <vertical child-control-height='false'>
+    <horizontal bg='panel-top' pad-left='15' pad-right='15' horizontal-fit='PreferredSize'>
+      <text text='Drink some water!' align='Center' font-size='8'/>
+    </horizontal>
+    <horizontal vertical-fit='PreferredSize'>
+      <text id='text-content' align='Center'/>
+    </horizontal>
+    <horizontal horizontal-fit='PreferredSize' vertical-fit='PreferredSize'>
+      <img id='drink-image' preserve-aspect="true" pref-width='40' pref-height='40'/>
+    </horizontal>
+    <horizontal vertical-fit='PreferredSize'>
+      <button id='continue-button' text='I understand!' on-click='continue-clicked'/>
+    </horizontal>
+  </vertical>
+</bg>
