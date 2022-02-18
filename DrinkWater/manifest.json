@@ -4,7 +4,7 @@
   "name": "DrinkWater",
   "author": "Sirspam",
   "version": "1.0.0",
-  "description": "",
+  "description": "Beat Saber mod to remind you of the importance of hydration",
   "gameVersion": "1.19.0",
   "icon": "DrinkWater.Resources.AquaDrink.png",
     "dependsOn": {
@@ -13,6 +13,6 @@
       "SiraUtil": "^3.0.3"
     },
   "links": {
-    "project-source": "https://github.com/Sirspam/Greetings"
+    "project-source": "https://github.com/Sirspam/DrinkWater"
   }
 }
