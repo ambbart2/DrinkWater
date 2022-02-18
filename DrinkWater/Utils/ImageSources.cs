@@ -13,7 +13,7 @@ namespace DrinkWater.Utils
 {
 	public class ImageSources
 	{
-		private List<string>? _localFiles = null;
+		private List<string>? _localFiles;
 		private const string WaifuPicsEndpoint = "https://api.waifu.pics/sfw/neko";
 		private readonly string _drinkWaterPath = Path.Combine(UnityGame.UserDataPath, nameof(DrinkWater));
 		private readonly string[] _classicSources = { "https://media1.tenor.com/images/013d560bab2b0fc56a2bc43b8262b4ed/tenor.gif", "https://i.giphy.com/zWOnltJgKVlsc.gif", "https://i.giphy.com/3ohhwF34cGDoFFhRfy.gif", "https://i.giphy.com/eRBa4tzlbNwE8.gif" };
@@ -56,7 +56,7 @@ namespace DrinkWater.Utils
 		{
 			try
 			{
-				_siraLog.Info($"Attempting to get image url from Waifu.Pics");
+				_siraLog.Info("Attempting to get image url from Waifu.Pics");
 				using var client = new HttpClient();
 				var response = await client.GetAsync(WaifuPicsEndpoint);
 				var result = JsonConvert.DeserializeObject<WebAPIEntries>(Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync()));
