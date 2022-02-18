@@ -1,25 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Settings;
+using BeatSaberMarkupLanguage.ViewControllers;
 using DrinkWater.Configuration;
 using DrinkWater.Utils;
+using IPA.Loader;
+using JetBrains.Annotations;
 using SiraUtil.Logging;
+using SiraUtil.Web.SiraSync;
+using SiraUtil.Zenject;
+using TMPro;
+using Tweening;
 using Zenject;
 
 namespace DrinkWater.UI.ViewControllers
 {
-	public class DrinkWaterSettingsViewController : IInitializable, IDisposable
+	public class DrinkWaterSettingsViewController : IInitializable, IDisposable, INotifyPropertyChanged
 	{
+		private bool _updateAvailable;
+		
+		[UIComponent("update-text")] 
+		private readonly TextMeshProUGUI _updateText = null!;
+		
 		private readonly SiraLog _siraLog;
 		private readonly PluginConfig _pluginConfig;
+		private readonly PluginMetadata _pluginMetadata;
+		private readonly ISiraSyncService _siraSyncService;
+		private readonly TimeTweeningManager _timeTweeningManager;
 
-		public DrinkWaterSettingsViewController(SiraLog siraLog, PluginConfig pluginConfig)
+		public DrinkWaterSettingsViewController(SiraLog siraLog, PluginConfig pluginConfig, UBinder<Plugin, PluginMetadata> pluginMetadata, ISiraSyncService siraSyncService, TimeTweeningManager timeTweeningManager)
 		{
 			_siraLog = siraLog;
 			_pluginConfig = pluginConfig;
+			_pluginMetadata = pluginMetadata.Value;
+			_siraSyncService = siraSyncService;
+			_timeTweeningManager = timeTweeningManager;
 		}
 
+		public event PropertyChangedEventHandler? PropertyChanged;
+		
+		[UIValue("update-available")]
+		private bool UpdateAvailable
+		{
+			get => _updateAvailable;
+			set
+			{
+				_updateAvailable = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UpdateAvailable)));
+			}
+		}
+		
 		[UIValue("enabled-bool")]
 		private bool EnabledValue
         {
@@ -79,6 +112,23 @@ namespace DrinkWater.UI.ViewControllers
             set => _pluginConfig.PlaycountBeforeWarning = value;
         }
 
+        [UIAction("#post-parse")]
+        private async void PostParse()
+        {
+	        if (!_updateAvailable)
+	        {
+		        var gitVersion = await _siraSyncService.LatestVersion();
+		        if (gitVersion != null && gitVersion > _pluginMetadata.HVersion)
+		        {
+			        _siraLog.Info($"{nameof(DrinkWater)} v{gitVersion} is available on GitHub!");
+			        _updateText.text = $"{nameof(DrinkWater)} v{gitVersion} is available on GitHub!";
+			        _updateText.alpha = 0f;
+			        UpdateAvailable = true;
+			        _timeTweeningManager.AddTween(new FloatTween(0f, 1f, val => _updateText.alpha = val, 0.4f, EaseType.InCubic), _updateText);
+		        }
+	        }
+        }
+        
         [UIAction("#apply")]
         public void OnApply()
         {

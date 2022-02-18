@@ -15,6 +15,7 @@ namespace DrinkWater
         public Plugin(Config conf, Logger logger, Zenjector zenjector)
         {
             zenjector.UseLogger(logger);
+            zenjector.UseMetadataBinder<Plugin>();
             zenjector.UseSiraSync();
             
             zenjector.Install<DrinkWaterMenuInstaller>(Location.Menu, conf.Generated<PluginConfig>());
