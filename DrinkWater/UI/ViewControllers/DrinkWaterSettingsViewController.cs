@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Settings;
-using BeatSaberMarkupLanguage.ViewControllers;
 using DrinkWater.Configuration;
 using DrinkWater.Utils;
 using IPA.Loader;
-using JetBrains.Annotations;
 using SiraUtil.Logging;
 using SiraUtil.Web.SiraSync;
 using SiraUtil.Zenject;
