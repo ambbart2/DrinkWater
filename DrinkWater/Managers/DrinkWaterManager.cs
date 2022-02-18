@@ -26,14 +26,6 @@ namespace DrinkWater.Managers
 			_drinkWaterPanelController = drinkWaterPanelController;
 			_standardLevelScenesTransitionSetupData = standardLevelScenesTransitionSetupData;
 		}
-
-		private void CheckIfDisplayPanelNeeded(DrinkWaterPanelController.PanelMode mode)
-		{
-			if (!_drinkWaterPanelController.displayPanelNeeded) return;
-
-			_drinkWaterPanelController.ShowDrinkWaterPanel(mode);
-			_drinkWaterPanelController.displayPanelNeeded = false;
-		}
 		
 		private void LevelFinisherOnStandardLevelFinished(LevelCompletionResults obj)
 		{

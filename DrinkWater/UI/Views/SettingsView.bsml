@@ -1,7 +1,8 @@
 ﻿<bg xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd">
   <settings-container>
     <bool-setting text='Enabled' value='enabled-bool' hover-hint='Enable or not the plugin'/>
-    <bool-setting text='Show GIFs' value='show-gif-bool' hover-hint='Display or not GIFs on the warning panel'/>
+    <bool-setting text='Show Images' value='show-image-bool' hover-hint='Display or not images on the warning panel'/>
+    <dropdown-list-setting text="Image Sources" value="image-source" choices="image-sources-list" hover-hint="Where the image is sourced from"/>
     <slider-setting text='Wait duration' value='wait-duration-int' min='0' max='30' increment='1' integer-only='true' show-buttons="true" hover-hint='Waiting time in seconds before skipping the warning panel'/>
     <bool-setting text='Enable by playtime' value='enable-playtime-bool' hover-hint='Enable the plugin depending of the playtime'/>
     <bool-setting text='Enable by play count' value='enable-playtime-count-bool' hover-hint='Enable the plugin depending of the play count'/>

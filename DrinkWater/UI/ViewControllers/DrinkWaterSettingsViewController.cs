@@ -1,17 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Settings;
 using DrinkWater.Configuration;
+using DrinkWater.Utils;
+using SiraUtil.Logging;
 using Zenject;
 
 namespace DrinkWater.UI.ViewControllers
 {
 	public class DrinkWaterSettingsViewController : IInitializable, IDisposable
 	{
+		private readonly SiraLog _siraLog;
 		private readonly PluginConfig _pluginConfig;
 
-		public DrinkWaterSettingsViewController(PluginConfig pluginConfig)
+		public DrinkWaterSettingsViewController(SiraLog siraLog, PluginConfig pluginConfig)
 		{
+			_siraLog = siraLog;
 			_pluginConfig = pluginConfig;
 		}
 
@@ -22,13 +27,23 @@ namespace DrinkWater.UI.ViewControllers
             set => _pluginConfig.EnablePlugin = value;
         }
 
-        [UIValue("show-gif-bool")]
+        [UIValue("show-image-bool")]
         private bool ShowGifValue
         {
-            get => _pluginConfig.ShowGIFs;
-            set => _pluginConfig.ShowGIFs = value;
+            get => _pluginConfig.ShowImages;
+            set => _pluginConfig.ShowImages = value;
         }
 
+        [UIValue("image-source")]
+        private string ImageSource
+        {
+	        get => _pluginConfig.ImageSource.ToString();
+	        set => _pluginConfig.ImageSource = (ImageSources.Sources) Enum.Parse(typeof(ImageSources.Sources), value);
+        }
+
+        [UIValue("image-sources-list")] 
+        private List<object> _imageSourcesList = new List<object>();
+	        
         [UIValue("wait-duration-int")]
         private int WaitDurationValue
         {
@@ -68,7 +83,8 @@ namespace DrinkWater.UI.ViewControllers
         public void OnApply()
         {
             _pluginConfig.EnablePlugin = EnabledValue;
-            _pluginConfig.ShowGIFs = ShowGifValue;
+            _pluginConfig.ShowImages = ShowGifValue;
+            _pluginConfig.ImageSource = (ImageSources.Sources) Enum.Parse(typeof(ImageSources.Sources), ImageSource);
             _pluginConfig.WaitDuration = WaitDurationValue;
             _pluginConfig.EnableByPlaytime = EnableByPlaytimeValue;
             _pluginConfig.EnableByPlaycount = EnableByPlaytimeCount;
@@ -79,11 +95,22 @@ namespace DrinkWater.UI.ViewControllers
 		public void Initialize()
 		{
 			BSMLSettings.instance.AddSettingsMenu("Drink Water", $"{nameof(DrinkWater)}.UI.Views.SettingsView.bsml", this);
+
+			_imageSourcesList.Clear();
+			foreach (var source in Enum.GetNames(typeof(ImageSources.Sources)))
+			{
+				_imageSourcesList.Add(source);
+			}
+			_siraLog.Info(_imageSourcesList.Count);
 		}
 
 		public void Dispose()
 		{
-			if (BSMLSettings.instance != null) BSMLSettings.instance.RemoveSettingsMenu(this);
+			if (BSMLSettings.instance != null)
+			{
+				_imageSourcesList.Clear();
+				BSMLSettings.instance.RemoveSettingsMenu(this);
+			}
 		}
 	}
 }

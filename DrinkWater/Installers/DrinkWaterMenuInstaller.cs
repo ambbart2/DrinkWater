@@ -3,6 +3,7 @@ using DrinkWater.Configuration;
 using DrinkWater.Managers;
 using DrinkWater.UI.FlowCoordinators;
 using DrinkWater.UI.ViewControllers;
+using DrinkWater.Utils;
 using Zenject;
 
 namespace DrinkWater.Installers
@@ -20,6 +21,7 @@ namespace DrinkWater.Installers
 		{
 			Container.BindInstance(_pluginConfig).AsSingle();
 			Container.BindInterfacesAndSelfTo<DrinkWaterManager>().AsSingle();
+			Container.Bind<ImageSources>().AsSingle();
 			
 			Container.BindInterfacesTo<ResultsViewControllerPatches>().AsSingle();
 

@@ -4,7 +4,9 @@ using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.ViewControllers;
 using DrinkWater.Configuration;
 using DrinkWater.UI.FlowCoordinators;
+using DrinkWater.Utils;
 using HMUI;
+using SiraUtil.Logging;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,9 +21,10 @@ namespace DrinkWater.UI.ViewControllers
         public bool displayPanelNeeded;
         private PanelMode _panelMode;
         private FlowCoordinator? _previousFlowCoordinator;
-        private readonly string[] _gifRotation = { "https://media1.tenor.com/images/013d560bab2b0fc56a2bc43b8262b4ed/tenor.gif", "https://i.giphy.com/zWOnltJgKVlsc.gif", "https://i.giphy.com/3ohhwF34cGDoFFhRfy.gif", "https://i.giphy.com/eRBa4tzlbNwE8.gif" };
-        
+
+        private SiraLog _siraLog = null!;
         private PluginConfig _pluginConfig = null!;
+        private ImageSources _imageSources = null!;
         private MainFlowCoordinator _mainFlowCoordinator = null!;
         private ResultsViewController _resultsViewController = null!;
         private FlowCoordinator _drinkWaterFlowCoordinator = null!;
@@ -33,14 +36,19 @@ namespace DrinkWater.UI.ViewControllers
         }
         
         [Inject]
-        public void Construct(PluginConfig pluginConfig, MainFlowCoordinator mainFlowCoordinator, ResultsViewController resultsViewController, DrinkWaterFlowCoordinator drinkWaterFlowCoordinator)
+        public void Construct(SiraLog siraLog, PluginConfig pluginConfig, ImageSources imageSources, MainFlowCoordinator mainFlowCoordinator, ResultsViewController resultsViewController, DrinkWaterFlowCoordinator drinkWaterFlowCoordinator)
         {
+            _siraLog = siraLog;
             _pluginConfig = pluginConfig;
+            _imageSources = imageSources;
             _mainFlowCoordinator = mainFlowCoordinator;
             _resultsViewController = resultsViewController;
             _drinkWaterFlowCoordinator = drinkWaterFlowCoordinator;
         }
 
+        [UIComponent("header-content")] 
+        internal readonly TextMeshProUGUI HeaderContent = null!;
+        
         [UIComponent("text-content")] 
         internal readonly TextMeshProUGUI TextContent = null!;
 
@@ -77,24 +85,36 @@ namespace DrinkWater.UI.ViewControllers
             }
             button.interactable = true;
         }
-        
-        [UIAction("#post-parse")]
-        private void PostParse()
+
+        protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
-            TextContent.text = (_panelMode == PanelMode.Restart ? "Before restarting this song" : "Before browsing some new songs") + ", drink some water, that's important for your body!";
+            base.DidActivate(firstActivation, addedToHierarchy, screenSystemEnabling);
+
+            if (_pluginConfig.ImageSource == ImageSources.Sources.Nya)
+            {
+                HeaderContent.text = "dwynk sum watew! 💦";
+                TextContent.text = (_panelMode == PanelMode.Restart ? "Beyfow weestawting this song" : "Beyfow bwowsying sum noow songes") + ", dwynk sum watew! t-t-that ish iympowtant fow yow bodee!! (>ω< )";
+                ContinueButtonText.text = "I undewstwand!! x3";
+            }
+            else
+            {
+                TextContent.text = (_panelMode == PanelMode.Restart ? "Before restarting this song" : "Before browsing some new songs") + ", drink some water, that's important for your body!";
+            }
+            
             StartCoroutine(MakeButtonInteractableDelay(ContinueButton, _pluginConfig.WaitDuration, 0.1f, "0.0"));
 
-            if (_pluginConfig.ShowGIFs)
-            // I swear I'm going to PR BSML just to remove the damn loading gif it makes me cry
-                DrinkImage.SetImage(_gifRotation[Random.Range(0, _gifRotation.Length)]);
+            if (_pluginConfig.ShowImages)
+            {
+                DrinkImage.SetImage(_imageSources.GetImagePath(_pluginConfig.ImageSource), false, true);
+            }
         }
-        
+
         [UIAction("continue-clicked")]
         private void ContinueClicked()
         {
             //TODO: Improve transitions
             _previousFlowCoordinator.DismissFlowCoordinator(_mainFlowCoordinator.YoungestChildFlowCoordinatorOrSelf(), immediately: true);
-
+            
             switch (_panelMode)
             {
                 case PanelMode.Continue:
