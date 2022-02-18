@@ -42,7 +42,7 @@ namespace DrinkWater.UI.ViewControllers
         }
 
         [UIValue("image-sources-list")] 
-        private List<object> _imageSourcesList = new List<object>();
+        private readonly List<object> _imageSourcesList = new List<object>();
 	        
         [UIValue("wait-duration-int")]
         private int WaitDurationValue
