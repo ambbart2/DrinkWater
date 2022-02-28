@@ -32,14 +32,14 @@ namespace DrinkWater.Utils
 			_siraLog = siraLog;
 		}
 
-		public string GetImagePath(Sources source)
+		public async Task<string> GetImagePath(Sources source)
 		{
 			switch (source)
 			{
 				case Sources.Classic:
 					return GetClassic();
 				case Sources.Nya:
-					return Task.Run(GetNya).Result;
+					return await Task.Run(GetNya);
 				case Sources.Local:
 					return GetLocal();
 				default:

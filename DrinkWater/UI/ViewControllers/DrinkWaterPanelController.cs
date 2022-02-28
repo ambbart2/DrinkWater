@@ -22,6 +22,13 @@ namespace DrinkWater.UI.ViewControllers
         private PanelMode _panelMode;
         private FlowCoordinator? _previousFlowCoordinator;
 
+        private static readonly BeatSaberUI.ScaleOptions ScaleOptions = new BeatSaberUI.ScaleOptions
+        {
+            ShouldScale = true,
+            MaintainRatio = true,
+            Height = 256
+        };
+
         private SiraLog _siraLog = null!;
         private PluginConfig _pluginConfig = null!;
         private ImageSources _imageSources = null!;
@@ -86,7 +93,7 @@ namespace DrinkWater.UI.ViewControllers
             button.interactable = true;
         }
 
-        protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+        protected async override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
             base.DidActivate(firstActivation, addedToHierarchy, screenSystemEnabling);
 
@@ -105,7 +112,7 @@ namespace DrinkWater.UI.ViewControllers
 
             if (_pluginConfig.ShowImages)
             {
-                DrinkImage.SetImage(_imageSources.GetImagePath(_pluginConfig.ImageSource), false, true);
+                DrinkImage.SetImage(await _imageSources.GetImagePath(_pluginConfig.ImageSource), true, ScaleOptions);
             }
         }
 
@@ -114,6 +121,7 @@ namespace DrinkWater.UI.ViewControllers
         {
             //TODO: Improve transitions
             _previousFlowCoordinator.DismissFlowCoordinator(_mainFlowCoordinator.YoungestChildFlowCoordinatorOrSelf(), immediately: true);
+            DrinkImage.sprite = Utilities.ImageResources.BlankSprite;
             
             switch (_panelMode)
             {
