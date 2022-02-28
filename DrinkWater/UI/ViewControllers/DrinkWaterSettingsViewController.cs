@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Settings;
 using DrinkWater.Configuration;
@@ -65,14 +66,13 @@ namespace DrinkWater.UI.ViewControllers
         }
 
         [UIValue("image-source")]
-        private string ImageSource
+        private object ImageSource
         {
-	        get => _pluginConfig.ImageSource.ToString();
-	        set => _pluginConfig.ImageSource = (ImageSources.Sources) Enum.Parse(typeof(ImageSources.Sources), value);
+	        get => _pluginConfig.ImageSource;
+	        set => _pluginConfig.ImageSource = (ImageSources.Sources) value;
         }
 
-        [UIValue("image-sources-list")] 
-        private readonly List<object> _imageSourcesList = new List<object>();
+        [UIValue("image-sources-list")] private readonly List<object> _imageSourcesList = Enum.GetValues(typeof(ImageSources.Sources)).Cast<object>().ToList();
 	        
         [UIValue("wait-duration-int")]
         private int WaitDurationValue
@@ -131,7 +131,7 @@ namespace DrinkWater.UI.ViewControllers
         {
             _pluginConfig.EnablePlugin = EnabledValue;
             _pluginConfig.ShowImages = ShowGifValue;
-            _pluginConfig.ImageSource = (ImageSources.Sources) Enum.Parse(typeof(ImageSources.Sources), ImageSource);
+            _pluginConfig.ImageSource = (ImageSources.Sources) ImageSource;
             _pluginConfig.WaitDuration = WaitDurationValue;
             _pluginConfig.EnableByPlaytime = EnableByPlaytimeValue;
             _pluginConfig.EnableByPlaycount = EnableByPlaytimeCount;
@@ -139,23 +139,12 @@ namespace DrinkWater.UI.ViewControllers
             _pluginConfig.PlaycountBeforeWarning = PlaycountBeforeWarningValue;
         }
 		
-		public void Initialize()
-		{
-			BSMLSettings.instance.AddSettingsMenu("Drink Water", $"{nameof(DrinkWater)}.UI.Views.SettingsView.bsml", this);
-
-			_imageSourcesList.Clear();
-			foreach (var source in Enum.GetNames(typeof(ImageSources.Sources)))
-			{
-				_imageSourcesList.Add(source);
-			}
-			_siraLog.Info(_imageSourcesList.Count);
-		}
+		public void Initialize() => BSMLSettings.instance.AddSettingsMenu("Drink Water", $"{nameof(DrinkWater)}.UI.Views.SettingsView.bsml", this);
 
 		public void Dispose()
 		{
 			if (BSMLSettings.instance != null)
 			{
-				_imageSourcesList.Clear();
 				BSMLSettings.instance.RemoveSettingsMenu(this);
 			}
 		}
