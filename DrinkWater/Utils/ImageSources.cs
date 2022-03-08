@@ -60,7 +60,13 @@ namespace DrinkWater.Utils
 				using var client = new HttpClient();
 				var response = await client.GetAsync(WaifuPicsEndpoint);
 				var result = JsonConvert.DeserializeObject<WebAPIEntries>(Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync()));
-				return result.Url ?? GetClassic();
+				if (result.Url != null)
+				{
+					_siraLog.Info("Loading image from " + result.Url);
+					return result.Url;
+				}
+				_siraLog.Info("url is null. Loading Classic image instead");
+				return GetClassic();
 			}
 			catch (Exception exception)
 			{
