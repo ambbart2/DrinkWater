@@ -109,6 +109,18 @@ namespace DrinkWater.UI.ViewControllers
             set => _pluginConfig.PlaycountBeforeWarning = value;
         }
 
+        [UIAction("format-wait-duration-slider")]
+        private string FormatWaitDurationSlider(int value)
+        {
+	        return value + " seconds";
+        }
+        
+        [UIAction("format-playtime-slider")]
+        private string FormatPlaytimeSlider(int value)
+        {
+	        return value + " minutes";
+        }
+        
         [UIAction("#post-parse")]
         private async void PostParse()
         {
