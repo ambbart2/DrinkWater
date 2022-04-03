@@ -32,20 +32,30 @@ namespace DrinkWater.Managers
 			if (!_pluginConfig.EnablePlugin) return;
 
 			var practiceSettings = _standardLevelScenesTransitionSetupData.practiceSettings;
-			if (practiceSettings != null)
-				_playTime += (obj.endSongTime - practiceSettings.startSongTime) / practiceSettings.songSpeedMul;
-			else
-				_playTime += obj.endSongTime / obj.gameplayModifiers.songSpeedMul;
-			_playCount += 1;
+
+			var songPlayDuration = practiceSettings == null
+				? obj.endSongTime
+				: obj.endSongTime - practiceSettings.startSongTime;
+
+			var songSpeedMul = practiceSettings?.songSpeedMul ?? obj.gameplayModifiers.songSpeedMul;
 			
-			if (_pluginConfig.EnableByPlaytime && _playTime >= _pluginConfig.PlaytimeBeforeWarning)
+			_siraLog.Info($"Song duration {songPlayDuration}, " +
+			              $"Speed Multiplier {songSpeedMul}, " +
+			              $"Actual playtime {songPlayDuration / songSpeedMul}");
+			
+			_playTime += songPlayDuration / songSpeedMul;
+			_playCount += 1;
+			// playtime we get from the game is in second, config playtime setting is in minute
+			if (_pluginConfig.EnableByPlaytime && _playTime >= _pluginConfig.PlaytimeBeforeWarning * 60)
 			{
+				_siraLog.Debug($"Playtime: {_playTime}, Setting: {_pluginConfig.PlaytimeBeforeWarning * 60}");
 				_siraLog.Info("Required play time met");
 				_drinkWaterPanelController.displayPanelNeeded = true;
 				_playTime = 0f;
 			}
 			else if (_pluginConfig.EnableByPlaycount && _playCount >= _pluginConfig.PlaycountBeforeWarning)
 			{
+				_siraLog.Debug($"PlayCount: {_playCount}, Setting: {_pluginConfig.PlaycountBeforeWarning}");
 				_siraLog.Info("Required play count met");
 				_drinkWaterPanelController.displayPanelNeeded = true;
 				_playCount = 0;
