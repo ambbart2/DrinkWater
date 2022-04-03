@@ -51,14 +51,20 @@ namespace DrinkWater.Managers
 				_siraLog.Debug($"Playtime: {_playTime}, Setting: {_pluginConfig.PlaytimeBeforeWarning * 60}");
 				_siraLog.Info("Required play time met");
 				_drinkWaterPanelController.displayPanelNeeded = true;
+				// reset both playtime and playCount
+				// otherwise we may get notification by play count right after a playtime notification
+				// or vise-versa
 				_playTime = 0f;
+				_playCount = 0;
 			}
 			else if (_pluginConfig.EnableByPlaycount && _playCount >= _pluginConfig.PlaycountBeforeWarning)
 			{
 				_siraLog.Debug($"PlayCount: {_playCount}, Setting: {_pluginConfig.PlaycountBeforeWarning}");
 				_siraLog.Info("Required play count met");
 				_drinkWaterPanelController.displayPanelNeeded = true;
+				// same here
 				_playCount = 0;
+				_playTime = 0f;
 			}
 		}
 
