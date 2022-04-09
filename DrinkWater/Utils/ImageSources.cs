@@ -15,6 +15,7 @@ namespace DrinkWater.Utils
 	{
 		private List<string>? _localFiles;
 		private const string WaifuPicsEndpoint = "https://api.waifu.pics/sfw/neko";
+		private const string WaifuPicsEndpointNSFW = "https://api.waifu.pics/nsfw/neko";
 		private readonly string _drinkWaterPath = Path.Combine(UnityGame.UserDataPath, nameof(DrinkWater));
 		private readonly string[] _classicSources = { "https://media1.tenor.com/images/013d560bab2b0fc56a2bc43b8262b4ed/tenor.gif", "https://i.giphy.com/zWOnltJgKVlsc.gif", "https://i.giphy.com/3ohhwF34cGDoFFhRfy.gif", "https://i.giphy.com/eRBa4tzlbNwE8.gif" };
 
@@ -24,6 +25,7 @@ namespace DrinkWater.Utils
 		{
 			Classic,
 			Nya,
+			NyaNSFW,
 			Local
 		}
 
@@ -40,6 +42,8 @@ namespace DrinkWater.Utils
 					return GetClassic();
 				case Sources.Nya:
 					return await Task.Run(GetNya);
+				case Sources.NyaNSFW:
+					return await Task.Run(GetNyaNSFW);
 				case Sources.Local:
 					return GetLocal();
 				default:
@@ -59,6 +63,29 @@ namespace DrinkWater.Utils
 				_siraLog.Info("Attempting to get image url from Waifu.Pics");
 				using var client = new HttpClient();
 				var response = await client.GetAsync(WaifuPicsEndpoint);
+				var result = JsonConvert.DeserializeObject<WebAPIEntries>(Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync()));
+				if (result.Url != null)
+				{
+					_siraLog.Info("Loading image from " + result.Url);
+					return result.Url;
+				}
+				_siraLog.Info("url is null. Loading Classic image instead");
+				return GetClassic();
+			}
+			catch (Exception exception)
+			{
+				_siraLog.Error("Failed to get url " + exception);
+				return GetClassic();
+			}
+		}
+
+		private async Task<string> GetNyaNSFW()
+		{
+			try
+			{
+				_siraLog.Info("Attempting to get image url from Waifu.Pics");
+				using var client = new HttpClient();
+				var response = await client.GetAsync(WaifuPicsEndpointNSFW);
 				var result = JsonConvert.DeserializeObject<WebAPIEntries>(Encoding.UTF8.GetString(await response.Content.ReadAsByteArrayAsync()));
 				if (result.Url != null)
 				{
