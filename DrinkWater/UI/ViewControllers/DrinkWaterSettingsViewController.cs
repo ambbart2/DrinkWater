@@ -124,6 +124,8 @@ namespace DrinkWater.UI.ViewControllers
         [UIAction("#post-parse")]
         private async void PostParse()
         {
+	        UpdateAvailable = false;
+	        
 	        if (!_updateAvailable)
 	        {
 		        var gitVersion = await _siraSyncService.LatestVersion();
